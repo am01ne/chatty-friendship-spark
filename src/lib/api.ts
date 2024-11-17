@@ -3,19 +3,19 @@ import { toast } from "@/components/ui/use-toast";
 const API_URL = "http://localhost:8000"; // Replace with your API URL
 
 export interface Message {
-  chatId: string;
-  senderId: string;
+  chatId: number;
+  senderId: number;
   msg: string;
   sent_at: string;
 }
 
 export interface Chat {
-  chatId: string;
-  user1_ID: string;
-  user2_ID: string;
+  chatId: number;
+  user1_ID: number;
+  user2_ID: number;
 }
 
-export const addFriend = async (user1Id: string, user2Id: string) => {
+export const addFriend = async (user1Id: number, user2Id: number) => {
   try {
     const response = await fetch(`${API_URL}/addFriend/${user1Id}/${user2Id}`, {
       method: "POST",
@@ -37,7 +37,7 @@ export const addFriend = async (user1Id: string, user2Id: string) => {
   }
 };
 
-export const getChats = async (userId: string) => {
+export const getChats = async (userId: number) => {
   try {
     const response = await fetch(`${API_URL}/getChats/${userId}`);
     if (!response.ok) throw new Error("Failed to fetch chats");
@@ -53,7 +53,7 @@ export const getChats = async (userId: string) => {
   }
 };
 
-export const sendMessage = async (chatId: string, senderId: string, message: string) => {
+export const sendMessage = async (chatId: number, senderId: number, message: string) => {
   try {
     const response = await fetch(`${API_URL}/addMsg`, {
       method: "POST",
@@ -79,7 +79,7 @@ export const sendMessage = async (chatId: string, senderId: string, message: str
   }
 };
 
-export const getMessages = async (chatId: string) => {
+export const getMessages = async (chatId: number) => {
   try {
     const response = await fetch(`${API_URL}/getMessages/${chatId}`);
     if (!response.ok) throw new Error("Failed to fetch messages");

@@ -4,30 +4,30 @@ import ProfileCard from "@/components/ProfileCard";
 
 const DEMO_PROFILES = [
   { 
-    id: "user123", 
+    id: 1, 
     name: "John Doe", 
     avatar: "https://i.pravatar.cc/150?img=1",
-    displayId: "ID: user123" 
+    displayId: "ID: 1" 
   },
   { 
-    id: "user456", 
+    id: 2, 
     name: "Jane Smith", 
     avatar: "https://i.pravatar.cc/150?img=2",
-    displayId: "ID: user456"
+    displayId: "ID: 2"
   },
   { 
-    id: "user789", 
+    id: 3, 
     name: "Mike Johnson", 
     avatar: "https://i.pravatar.cc/150?img=3",
-    displayId: "ID: user789"
+    displayId: "ID: 3"
   },
 ];
 
 const Index = () => {
   const navigate = useNavigate();
 
-  const handleSelectProfile = (id: string) => {
-    localStorage.setItem("currentUserId", id);
+  const handleSelectProfile = (id: number) => {
+    localStorage.setItem("currentUserId", id.toString());
     navigate("/chats");
   };
 

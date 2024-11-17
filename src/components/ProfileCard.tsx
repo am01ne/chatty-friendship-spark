@@ -2,11 +2,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 interface ProfileCardProps {
-  id: string;
+  id: number;
   name: string;
   avatar: string;
   displayId: string;
-  onSelect: (id: string) => void;
+  onSelect: (id: number) => void;
 }
 
 const ProfileCard = ({ id, name, avatar, displayId, onSelect }: ProfileCardProps) => {
