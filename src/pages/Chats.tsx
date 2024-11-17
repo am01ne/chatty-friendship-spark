@@ -18,7 +18,7 @@ const Chats = () => {
     }
     
     const fetchChats = async () => {
-      const data = await getChats(currentUserId);
+      const data = await getChats(parseInt(currentUserId));
       setChats(data);
     };
 
@@ -27,7 +27,7 @@ const Chats = () => {
 
   const handleAddFriend = async () => {
     if (!friendId || !currentUserId) return;
-    const newChat = await addFriend(currentUserId, friendId);
+    const newChat = await addFriend(parseInt(currentUserId), parseInt(friendId));
     if (newChat) {
       setChats([...chats, newChat]);
       setFriendId("");
@@ -39,6 +39,9 @@ const Chats = () => {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold">Your Chats</h1>
+          <div className="text-sm text-gray-500">
+            Your ID: {currentUserId}
+          </div>
           <Button
             variant="outline"
             onClick={() => {
@@ -52,14 +55,14 @@ const Chats = () => {
 
         <div className="flex gap-4 mb-8">
           <Input
-            placeholder="Enter friend's ID"
+            placeholder="Enter friend's ID (e.g., 1, 2, 3)"
             value={friendId}
             onChange={(e) => setFriendId(e.target.value)}
           />
           <Button onClick={handleAddFriend}>Add Friend</Button>
         </div>
 
-        <ChatList chats={chats} currentUserId={currentUserId || ""} />
+        <ChatList chats={chats} currentUserId={parseInt(currentUserId || "0")} />
       </div>
     </div>
   );

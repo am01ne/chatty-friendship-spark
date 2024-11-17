@@ -21,7 +21,7 @@ const ChatDetail = () => {
 
     const fetchMessages = async () => {
       if (!chatId) return;
-      const data = await getMessages(chatId);
+      const data = await getMessages(parseInt(chatId));
       setMessages(data);
     };
 
@@ -38,7 +38,7 @@ const ChatDetail = () => {
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !chatId || !currentUserId) return;
 
-    const sent = await sendMessage(chatId, currentUserId, newMessage);
+    const sent = await sendMessage(parseInt(chatId), parseInt(currentUserId), newMessage);
     if (sent) {
       setMessages([...messages, sent]);
       setNewMessage("");
@@ -62,7 +62,7 @@ const ChatDetail = () => {
               <MessageBubble
                 key={index}
                 message={message}
-                isCurrentUser={message.senderId === currentUserId}
+                isCurrentUser={message.senderId === parseInt(currentUserId || "0")}
               />
             ))}
             <div ref={messagesEndRef} />
