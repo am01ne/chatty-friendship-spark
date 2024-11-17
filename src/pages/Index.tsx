@@ -3,9 +3,24 @@ import { useNavigate } from "react-router-dom";
 import ProfileCard from "@/components/ProfileCard";
 
 const DEMO_PROFILES = [
-  { id: "user1", name: "John Doe", avatar: "https://i.pravatar.cc/150?img=1" },
-  { id: "user2", name: "Jane Smith", avatar: "https://i.pravatar.cc/150?img=2" },
-  { id: "user3", name: "Mike Johnson", avatar: "https://i.pravatar.cc/150?img=3" },
+  { 
+    id: "user123", 
+    name: "John Doe", 
+    avatar: "https://i.pravatar.cc/150?img=1",
+    displayId: "ID: user123" 
+  },
+  { 
+    id: "user456", 
+    name: "Jane Smith", 
+    avatar: "https://i.pravatar.cc/150?img=2",
+    displayId: "ID: user456"
+  },
+  { 
+    id: "user789", 
+    name: "Mike Johnson", 
+    avatar: "https://i.pravatar.cc/150?img=3",
+    displayId: "ID: user789"
+  },
 ];
 
 const Index = () => {
