@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import MessageBubble from "@/components/MessageBubble";
-import { getMessages, sendMessage, Message } from "@/lib/api";
+import { getMessages, Message } from "@/lib/api";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 const ChatDetail = () => {
   const { chatId } = useParams();
@@ -11,6 +12,7 @@ const ChatDetail = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const wsRef = useRef<ReconnectingWebSocket | null>(null);
   const currentUserId = localStorage.getItem("currentUserId");
 
   useEffect(() => {
@@ -19,6 +21,7 @@ const ChatDetail = () => {
       return;
     }
 
+    // Initial messages load
     const fetchMessages = async () => {
       if (!chatId) return;
       const data = await getMessages(parseInt(chatId));
@@ -26,23 +29,59 @@ const ChatDetail = () => {
     };
 
     fetchMessages();
-    const interval = setInterval(fetchMessages, 3000); // Poll for new messages
 
-    return () => clearInterval(interval);
+    // WebSocket connection
+    const ws = new ReconnectingWebSocket(
+      `ws://localhost:8000/ws/chat/${chatId}/${currentUserId}/`
+    );
+
+    ws.onopen = () => {
+      console.log("WebSocket Connected");
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.message) {
+        const newMsg: Message = {
+          chatId: parseInt(chatId!),
+          senderId: parseInt(data.message.senderId),
+          msg: data.message.msg,
+          sent_at: new Date().toISOString(),
+        };
+        setMessages((prevMessages) => [...prevMessages, newMsg]);
+      }
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket Disconnected");
+    };
+
+    wsRef.current = ws;
+
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
   }, [chatId, currentUserId, navigate]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim() || !chatId || !currentUserId) return;
+  const handleSendMessage = () => {
+    if (!newMessage.trim() || !chatId || !currentUserId || !wsRef.current) return;
 
-    const sent = await sendMessage(parseInt(chatId), parseInt(currentUserId), newMessage);
-    if (sent) {
-      setMessages([...messages, sent]);
-      setNewMessage("");
-    }
+    const messageData = {
+      message: {
+        senderId: currentUserId,
+        msg: newMessage,
+        chatId: chatId,
+      },
+    };
+
+    wsRef.current.send(JSON.stringify(messageData));
+    setNewMessage("");
   };
 
   return (

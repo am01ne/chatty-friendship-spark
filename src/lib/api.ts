@@ -53,32 +53,7 @@ export const getChats = async (userId: number) => {
   }
 };
 
-export const sendMessage = async (chatId: number, senderId: number, message: string) => {
-  try {
-    const response = await fetch(`${API_URL}/addMsg`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        chatId,
-        senderId,
-        msg: message,
-        sent_at: new Date().toISOString(),
-      }),
-    });
-    if (!response.ok) throw new Error("Failed to send message");
-    return await response.json();
-  } catch (error) {
-    console.error("Error sending message:", error);
-    toast({
-      title: "Error",
-      description: "Failed to send message",
-      variant: "destructive",
-    });
-  }
-};
-
+// Only used for initial message load
 export const getMessages = async (chatId: number) => {
   try {
     const response = await fetch(`${API_URL}/getMessages/${chatId}`);
