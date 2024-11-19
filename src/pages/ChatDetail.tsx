@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import MessageBubble from "@/components/MessageBubble";
 import { getMessages, Message } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
 const ChatDetail = () => {
@@ -14,6 +15,7 @@ const ChatDetail = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<ReconnectingWebSocket | null>(null);
   const currentUserId = localStorage.getItem("currentUserId");
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!currentUserId) {
@@ -37,9 +39,14 @@ const ChatDetail = () => {
 
     ws.onopen = () => {
       console.log("WebSocket Connected");
+      toast({
+        title: "Connected to chat",
+        description: "You can now send and receive messages",
+      });
     };
 
     ws.onmessage = (event) => {
+      console.log("Received message:", event.data);
       const data = JSON.parse(event.data);
       if (data.message) {
         const newMsg: Message = {
@@ -48,12 +55,18 @@ const ChatDetail = () => {
           msg: data.message.msg,
           sent_at: new Date().toISOString(),
         };
+        console.log("Adding new message to state:", newMsg);
         setMessages((prevMessages) => [...prevMessages, newMsg]);
       }
     };
 
     ws.onclose = () => {
       console.log("WebSocket Disconnected");
+      toast({
+        title: "Disconnected from chat",
+        description: "Attempting to reconnect...",
+        variant: "destructive",
+      });
     };
 
     wsRef.current = ws;
@@ -63,7 +76,7 @@ const ChatDetail = () => {
         wsRef.current.close();
       }
     };
-  }, [chatId, currentUserId, navigate]);
+  }, [chatId, currentUserId, navigate, toast]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -80,6 +93,7 @@ const ChatDetail = () => {
       },
     };
 
+    console.log("Sending message:", messageData);
     wsRef.current.send(JSON.stringify(messageData));
     setNewMessage("");
   };
@@ -92,7 +106,7 @@ const ChatDetail = () => {
             Back to Chats
           </Button>
           <h1 className="text-2xl font-bold">Chat</h1>
-          <div className="w-[100px]" /> {/* Spacer for centering */}
+          <div className="w-[100px]" />
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-6">
