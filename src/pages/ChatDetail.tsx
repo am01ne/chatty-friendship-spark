@@ -6,6 +6,7 @@ import MessageBubble from "@/components/MessageBubble";
 import { getMessages, Message } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import ReconnectingWebSocket from "reconnecting-websocket";
+import { User, Send, ArrowLeft } from "lucide-react";
 
 const ChatDetail = () => {
   const { chatId } = useParams();
@@ -99,18 +100,28 @@ const ChatDetail = () => {
   };
 
   return (
-    <div className="container py-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <Button variant="outline" onClick={() => navigate("/chats")}>
-            Back to Chats
-          </Button>
-          <h1 className="text-2xl font-bold">Chat</h1>
-          <div className="w-[100px]" />
+    <div className="container h-[calc(100vh-4rem)] py-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
+        <div className="glass-card lg:col-span-3 overflow-y-auto">
+          <div className="flex items-center gap-4 mb-6">
+            <Button variant="ghost" className="glass-button p-2" onClick={() => navigate("/chats")}>
+              <ArrowLeft size={20} />
+            </Button>
+            <h2 className="text-xl font-semibold">Chat Details</h2>
+          </div>
+          <div className="flex items-center gap-4 p-4 rounded-lg glass-effect">
+            <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
+              <User size={24} className="text-blue-400" />
+            </div>
+            <div>
+              <p className="font-medium">User {chatId}</p>
+              <p className="text-sm text-muted-foreground">Online</p>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="h-[500px] overflow-y-auto mb-4">
+        <div className="glass-card lg:col-span-9 flex flex-col">
+          <div className="flex-1 overflow-y-auto space-y-4 mb-4">
             {messages.map((message, index) => (
               <MessageBubble
                 key={index}
@@ -121,14 +132,17 @@ const ChatDetail = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-2 pt-4 border-t border-white/10">
             <Input
               placeholder="Type a message..."
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+              className="glass-effect"
             />
-            <Button onClick={handleSendMessage}>Send</Button>
+            <Button onClick={handleSendMessage} className="glass-button">
+              <Send size={20} />
+            </Button>
           </div>
         </div>
       </div>
