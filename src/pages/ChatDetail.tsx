@@ -94,7 +94,6 @@ const ChatDetail = () => {
       },
     };
 
-    console.log("Sending message:", messageData);
     wsRef.current.send(JSON.stringify(messageData));
     setNewMessage("");
   };
