@@ -72,7 +72,7 @@
   }
   
   body {
-    @apply bg-gradient-to-br from-purple-500/20 via-blue-500/20 to-pink-500/20 min-h-screen text-foreground;
+    @apply bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#334155] min-h-screen text-foreground;
   }
 }
 
