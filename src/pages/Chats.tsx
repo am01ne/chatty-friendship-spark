@@ -2,18 +2,18 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { User, UserPlus, LogOut, Shield, ShieldOff, Check, X } from "lucide-react";
+import { User, UserPlus, LogOut } from "lucide-react";
 import { 
   inviteFriend, 
   getChats, 
   acceptFriend, 
   declineFriend, 
-  blockFriend, 
-  unblockFriend,
   getNotifications,
   Chat,
   Notification 
 } from "@/lib/api";
+import ChatList from "@/components/ChatList";
+import FriendRequests from "@/components/FriendRequests";
 
 const Chats = () => {
   const navigate = useNavigate();
@@ -29,8 +29,12 @@ const Chats = () => {
     }
     
     const fetchData = async () => {
-      const chatsData = await getChats(parseInt(currentUserId));
-      const notificationsData = await getNotifications(parseInt(currentUserId));
+      const [chatsData, notificationsData] = await Promise.all([
+        getChats(parseInt(currentUserId)),
+        getNotifications(parseInt(currentUserId))
+      ]);
+      console.log("Fetched chats:", chatsData);
+      console.log("Fetched notifications:", notificationsData);
       setChats(chatsData);
       setNotifications(notificationsData);
     };
@@ -40,18 +44,19 @@ const Chats = () => {
 
   const handleAddFriend = async () => {
     if (!friendId || !currentUserId) return;
-    const newChat = await inviteFriend(parseInt(currentUserId), parseInt(friendId));
-    if (newChat) {
-      setFriendId("");
-      // Refresh notifications after sending invite
-      const notificationsData = await getNotifications(parseInt(currentUserId));
-      setNotifications(notificationsData);
-    }
+    await inviteFriend(parseInt(currentUserId), parseInt(friendId));
+    setFriendId("");
+    // Refresh notifications after sending invite
+    const notificationsData = await getNotifications(parseInt(currentUserId));
+    setNotifications(notificationsData);
   };
 
   const handleAcceptFriend = async (friendId: number) => {
     if (!currentUserId) return;
-    await acceptFriend(parseInt(currentUserId), friendId);
+    console.log("Accepting friend request from:", friendId);
+    const result = await acceptFriend(parseInt(currentUserId), friendId);
+    console.log("Accept friend result:", result);
+    
     // Refresh both chats and notifications
     const [chatsData, notificationsData] = await Promise.all([
       getChats(parseInt(currentUserId)),
@@ -63,24 +68,13 @@ const Chats = () => {
 
   const handleDeclineFriend = async (friendId: number) => {
     if (!currentUserId) return;
-    await declineFriend(parseInt(currentUserId), friendId);
+    console.log("Declining friend request from:", friendId);
+    const result = await declineFriend(parseInt(currentUserId), friendId);
+    console.log("Decline friend result:", result);
+    
     // Refresh notifications after declining
     const notificationsData = await getNotifications(parseInt(currentUserId));
     setNotifications(notificationsData);
-  };
-
-  const handleBlockFriend = async (friendId: number) => {
-    if (!currentUserId) return;
-    await blockFriend(parseInt(currentUserId), friendId);
-    const chatsData = await getChats(parseInt(currentUserId));
-    setChats(chatsData);
-  };
-
-  const handleUnblockFriend = async (friendId: number) => {
-    if (!currentUserId) return;
-    await unblockFriend(parseInt(currentUserId), friendId);
-    const chatsData = await getChats(parseInt(currentUserId));
-    setChats(chatsData);
   };
 
   return (
@@ -123,106 +117,15 @@ const Chats = () => {
           </div>
         </div>
 
-        {/* Friend Requests Section */}
-        {notifications.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-4 text-white/90">Friend Requests</h2>
-            <div className="space-y-4">
-              {notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className="glass-card p-4 border-l-4 border-yellow-500"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center">
-                        <User size={24} className="text-yellow-400" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium">User {notification.user_id}</h3>
-                        <p className="text-sm text-white/70">Friend Request</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleAcceptFriend(notification.user_id)}
-                        className="glass-button bg-green-500/20 hover:bg-green-500/30"
-                      >
-                        <Check size={16} className="mr-1" />
-                        Accept
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeclineFriend(notification.user_id)}
-                        className="glass-button bg-red-500/20 hover:bg-red-500/30"
-                      >
-                        <X size={16} className="mr-1" />
-                        Decline
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <FriendRequests 
+          notifications={notifications}
+          onAccept={handleAcceptFriend}
+          onDecline={handleDeclineFriend}
+        />
 
-        {/* Active Chats Section */}
         <div>
           <h2 className="text-lg font-semibold mb-4 text-white/90">Active Chats</h2>
-          <div className="space-y-4">
-            {chats.map((chat) => {
-              const friendUserId = chat.user1_ID === parseInt(currentUserId || "0")
-                ? chat.user2_ID
-                : chat.user1_ID;
-
-              return (
-                <div
-                  key={chat.chatId}
-                  className="glass-card p-4 hover:bg-white/20 transition-all duration-200"
-                >
-                  <div className="flex items-center justify-between">
-                    <div 
-                      className="flex items-center gap-4 cursor-pointer"
-                      onClick={() => navigate(`/chat/${chat.chatId}`)}
-                    >
-                      <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
-                        <User size={24} className="text-blue-400" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium">User {friendUserId}</h3>
-                        <p className="text-sm text-white/70">ID: {friendUserId}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleBlockFriend(friendUserId)}
-                        className="glass-button"
-                      >
-                        <Shield size={16} className="mr-1" />
-                        Block
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleUnblockFriend(friendUserId)}
-                        className="glass-button"
-                      >
-                        <ShieldOff size={16} className="mr-1" />
-                        Unblock
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <ChatList chats={chats} currentUserId={parseInt(currentUserId || "0")} />
         </div>
       </div>
     </div>
