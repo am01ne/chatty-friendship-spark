@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { User, UserPlus, LogOut } from "lucide-react";
-import { addFriend, getChats, Chat } from "@/lib/api";
+import { inviteFriend, getChats, Chat } from "@/lib/api";
 
 const Chats = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const Chats = () => {
 
   const handleAddFriend = async () => {
     if (!friendId || !currentUserId) return;
-    const newChat = await addFriend(parseInt(currentUserId), parseInt(friendId));
+    const newChat = await inviteFriend(parseInt(currentUserId), parseInt(friendId));
     if (newChat) {
       setChats([...chats, newChat]);
       setFriendId("");
