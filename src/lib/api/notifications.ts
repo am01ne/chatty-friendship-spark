@@ -2,10 +2,10 @@ import { toast } from "@/components/ui/use-toast";
 import { API_URL, getAuthHeaders } from "./config";
 import { Notification } from "./types";
 
-export const getNotifications = async (userId: number): Promise<Notification[]> => {
+export const getNotifications = async (): Promise<Notification[]> => {
   try {
-    console.log("Fetching notifications for user:", userId);
-    const response = await fetch(`${API_URL}/getNotifications/${userId}`, {
+    console.log("Fetching notifications using JWT token");
+    const response = await fetch(`${API_URL}/getNotifications/`, {
       headers: getAuthHeaders(),
     });
     

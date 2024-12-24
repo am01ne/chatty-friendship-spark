@@ -2,10 +2,10 @@ import { toast } from "@/components/ui/use-toast";
 import { API_URL, getAuthHeaders, handleApiError } from "./config";
 import { Chat } from "./types";
 
-export const getChats = async (userId: number): Promise<Chat[]> => {
+export const getChats = async (): Promise<Chat[]> => {
   try {
-    console.log("Fetching chats for user:", userId);
-    const response = await fetch(`${API_URL}/getChats/${userId}`, {
+    console.log("Fetching chats using JWT token");
+    const response = await fetch(`${API_URL}/getChats/`, {
       headers: getAuthHeaders(),
     });
     

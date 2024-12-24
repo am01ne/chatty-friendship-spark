@@ -1,14 +1,13 @@
 import { toast } from "@/components/ui/use-toast";
 import { API_URL, getAuthHeaders, handleApiError } from "./config";
 
-export const inviteFriend = async (user1Id: number, user2Id: number) => {
+export const inviteFriend = async (user2Id: number) => {
   try {
-    console.log(`Sending friend request: user1=${user1Id}, user2=${user2Id}`);
+    console.log(`Sending friend request to user: ${user2Id}`);
     const response = await fetch(`${API_URL}/invite/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({
-        user1: user1Id.toString(),
         user2: user2Id.toString(),
         type: "friend",
       }),
@@ -83,7 +82,7 @@ export const declineFriend = async (user2Id: number) => {
   }
 };
 
-export const blockFriend = async (user1Id: number, user2Id: number) => {
+export const blockFriend = async (user2Id: number) => {
   try {
     console.log(`Blocking user: ${user2Id}`);
     const response = await fetch(`${API_URL}/blockFriend/`, {
@@ -110,7 +109,7 @@ export const blockFriend = async (user1Id: number, user2Id: number) => {
   }
 };
 
-export const unblockFriend = async (user1Id: number, user2Id: number) => {
+export const unblockFriend = async (user2Id: number) => {
   try {
     console.log(`Unblocking user: ${user2Id}`);
     const response = await fetch(`${API_URL}/deblockFriend/`, {
