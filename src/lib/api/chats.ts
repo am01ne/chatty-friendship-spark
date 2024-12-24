@@ -1,6 +1,6 @@
 import { toast } from "@/components/ui/use-toast";
-import { API_URL, getAuthHeaders, handleApiError } from "./config";
-import { Chat } from "./types";
+import { API_URL, getAuthHeaders } from "./config";
+import { Chat, Message } from "./types";
 
 export const getChats = async (): Promise<Chat[]> => {
   try {
@@ -25,10 +25,10 @@ export const getChats = async (): Promise<Chat[]> => {
   }
 };
 
-export const getMessages = async (chatId: number) => {
+export const getMessages = async (friendshipId: number): Promise<Message[]> => {
   try {
-    console.log("Fetching messages for chat:", chatId);
-    const response = await fetch(`${API_URL}/getMessages/${chatId}`, {
+    console.log("Fetching messages for friendship_id:", friendshipId);
+    const response = await fetch(`${API_URL}/getMessages/${friendshipId}`, {
       headers: getAuthHeaders(),
     });
     

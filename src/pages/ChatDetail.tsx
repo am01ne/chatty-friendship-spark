@@ -19,14 +19,14 @@ const ChatDetail = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!currentUserId) {
+    if (!currentUserId || !chatId) {
       navigate("/");
       return;
     }
 
     // Initial messages load
     const fetchMessages = async () => {
-      if (!chatId) return;
+      console.log("Fetching messages for friendship_id:", chatId);
       const data = await getMessages(parseInt(chatId));
       setMessages(data);
     };
@@ -39,7 +39,7 @@ const ChatDetail = () => {
     );
 
     ws.onopen = () => {
-      console.log("WebSocket Connected");
+      console.log("WebSocket Connected for chat:", chatId);
       toast({
         title: "Connected to chat",
         description: "You can now send and receive messages",
@@ -51,7 +51,7 @@ const ChatDetail = () => {
       const data = JSON.parse(event.data);
       if (data.message) {
         const newMsg: Message = {
-          chatId: parseInt(chatId!),
+          chatId: parseInt(chatId),
           senderId: parseInt(data.message.senderId),
           msg: data.message.msg,
           sent_at: new Date().toISOString(),
