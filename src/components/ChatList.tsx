@@ -23,9 +23,9 @@ const ChatList = ({ chats, currentUserId }: ChatListProps) => {
 
         return (
           <Card
-            key={chat.chatId}
+            key={chat.friendship_id}
             className="p-4 cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => navigate(`/chat/${chat.chatId}`)}
+            onClick={() => navigate(`/chat/${chat.friendship_id}`)}
           >
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white">
