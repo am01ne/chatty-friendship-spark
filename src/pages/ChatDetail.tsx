@@ -16,6 +16,7 @@ const ChatDetail = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<ReconnectingWebSocket | null>(null);
   const currentUserId = localStorage.getItem("currentUserId");
+  const jwtToken = localStorage.getItem("jwt_token");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -33,9 +34,9 @@ const ChatDetail = () => {
 
     fetchMessages();
 
-    // WebSocket connection
+    // WebSocket connection with JWT token
     const ws = new ReconnectingWebSocket(
-      `ws://localhost:8000/ws/chat/${chatId}/${currentUserId}/`
+      `ws://localhost:8000/ws/chat/${chatId}/${currentUserId}/?token=${jwtToken}`
     );
 
     ws.onopen = () => {
@@ -77,7 +78,7 @@ const ChatDetail = () => {
         wsRef.current.close();
       }
     };
-  }, [chatId, currentUserId, navigate, toast]);
+  }, [chatId, currentUserId, navigate, toast, jwtToken]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
