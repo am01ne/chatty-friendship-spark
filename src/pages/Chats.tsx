@@ -30,8 +30,8 @@ const Chats = () => {
     
     const fetchData = async () => {
       const [chatsData, notificationsData] = await Promise.all([
-        getChats(parseInt(currentUserId)),
-        getNotifications(parseInt(currentUserId))
+        getChats(),
+        getNotifications()
       ]);
       console.log("Fetched chats:", chatsData);
       console.log("Fetched notifications:", notificationsData);
@@ -43,37 +43,35 @@ const Chats = () => {
   }, [currentUserId, navigate]);
 
   const handleAddFriend = async () => {
-    if (!friendId || !currentUserId) return;
-    await inviteFriend(parseInt(currentUserId), parseInt(friendId));
+    if (!friendId) return;
+    await inviteFriend(parseInt(friendId));
     setFriendId("");
     // Refresh notifications after sending invite
-    const notificationsData = await getNotifications(parseInt(currentUserId));
+    const notificationsData = await getNotifications();
     setNotifications(notificationsData);
   };
 
   const handleAcceptFriend = async (friendId: number) => {
-    if (!currentUserId) return;
     console.log("Accepting friend request from:", friendId);
-    const result = await acceptFriend(parseInt(currentUserId), friendId);
+    const result = await acceptFriend(friendId);
     console.log("Accept friend result:", result);
     
     // Refresh both chats and notifications
     const [chatsData, notificationsData] = await Promise.all([
-      getChats(parseInt(currentUserId)),
-      getNotifications(parseInt(currentUserId))
+      getChats(),
+      getNotifications()
     ]);
     setChats(chatsData);
     setNotifications(notificationsData);
   };
 
   const handleDeclineFriend = async (friendId: number) => {
-    if (!currentUserId) return;
     console.log("Declining friend request from:", friendId);
-    const result = await declineFriend(parseInt(currentUserId), friendId);
+    const result = await declineFriend(friendId);
     console.log("Decline friend result:", result);
     
     // Refresh notifications after declining
-    const notificationsData = await getNotifications(parseInt(currentUserId));
+    const notificationsData = await getNotifications();
     setNotifications(notificationsData);
   };
 
